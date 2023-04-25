@@ -87,14 +87,10 @@ img = img.convert("L")
 height = img.height
 width = img.width
 aspect_ratio = height / width
+width_count = width / 6
+height_count = height / 8
 
-resize_width = 1200
-resize_height = resize_width / aspect_ratio
-
-width_count = (resize_width // 6)
-height_count = resize_height // 8
-
-img = img.resize((1200, math.floor(resize_height)), PIL.Image.LANCZOS)
+#img = img.resize((1200, math.floor(resize_height)), PIL.Image.LANCZOS)
 # char arrays
 # char_dict_minus 10% increment
 # char_dict 5% increment
@@ -308,8 +304,8 @@ char_dict_plus_chars_default = {"$": 100,
 # crop image in grid of 6x8 images and save in array
 # TODO isto aqui nao esta a fazer o crop bem
 cropped_img = []
-for i in range(0, int(resize_height), 16):
-    for j in range(0, int(resize_width), 6):
+for i in range(0, int(height), 16):
+    for j in range(0, int(width), 6):
         cropped_img.append(img.crop((j, i, j + 6, i + 16)))
 
 # get average color of each cropped image
@@ -328,9 +324,11 @@ for i in range(cropped_img.__len__()):
 print_ascii = ""
 dict_to_use = "char_dict_" + CHARS + "_" + MODE
 for i in range(cropped_img.__len__()):
-    if not 0 and i % width_count == 0:
+    if not 0 and i % math.ceil(width_count) == 0:
         print_ascii += "\n"  # line break every time i is multiple of width_count
 
     print_ascii += (min(globals()[dict_to_use].items(), key=lambda x: abs(avg_color[i] - x[1])))[0]
 
-print(print_ascii)
+f = open("ascci_text.txt", "w")
+f.write(print_ascii)
+f.close()
